@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  db:
+    platform: linux/x86_64
+    image: mariadb:5.5.64
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./docker/db/mariadb:/var/lib/mysql:rw
+      - ./docker/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:rw
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --bind-address=0.0.0.0
+    environment:
+      - MARIADB_USER=dbuser
+      - MARIADB_PASSWORD=123
+      - MARIADB_ROOT_USER=root
+      - MARIADB_ROOT_PASSWORD=123
+      - MARIADB_DATABASE=opencart
+      - MYSQL_ROOT_PASSWORD=123
+    ports:
+      - 3306:3306
+    container_name: opencart-db
+    networks:
+      - opencart_network
+  app:
+    build:
+      context: ./docker
+    image: opencart-dev-app
+    volumes:
+      - ./opencart-ml.com:/var/www/html
+      - ./opencart-ml.com/system/storage:/var/www/storage
+    ports:
+      - 80:80
+      - 443:443
+    container_name: opencart-app
+    networks:
+      - opencart_network
+    depends_on:
+      - db
+networks:
+  opencart_network:
+    driver: bridge
