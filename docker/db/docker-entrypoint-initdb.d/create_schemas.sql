@@ -1,1 +1,6 @@
 CREATE DATABASE `opencart` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
+CREATE USER 'dbuser'@'%' IDENTIFIED BY '123';
+CREATE USER 'dbuser'@'localhost' IDENTIFIED BY '123';
+GRANT ALL ON *.* TO 'dbuser'@'%' WITH GRANT OPTION;
+GRANT ALL ON *.* TO 'dbuser'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
