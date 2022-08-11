@@ -3,19 +3,25 @@ FROM php:${PHP_VERSION}-apache
 MAINTAINER Andrew Alba <aalba@metabolicliving.com>
 
 RUN set -ex; \
-	\
-	apt-get update; \
-	apt-get install -y \
+    \
+    apt-get update; \
+    apt-get install -y \
     libzip-dev \
     zip \
     libpng-dev \
+    zlib1g-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
 ;
 
 RUN docker-php-ext-install mysqli &&  \
     docker-php-ext-enable mysqli && \
-    docker-php-ext-install gd && \
     docker-php-ext-install zip ;
 
+# GD install
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg;
+
+RUN docker-php-ext-install gd ;
 
 # Install xDebug
 ENV XDEBUG_VERSION=3.1.4
@@ -29,7 +35,7 @@ RUN rm -rf /var/lib/apt/lists/*
 
 # set additional PHP.ini settings
 RUN { \
-	echo 'memory_limit=1024M'; \
+    echo 'memory_limit=1024M'; \
     echo 'mysqli.reconnect=1'; \
     } > /usr/local/etc/php/conf.d/zzz_custom_php_options.ini;
 
